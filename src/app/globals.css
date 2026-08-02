@@ -1,0 +1,184 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #ffffff;
+  --bg-elevated: #f3f6fb;
+  --bg-card: #ffffff;
+  --trace: #0a2540;
+  --trace-dim: #0a254033;
+  --copper: #1e3a5f;
+  --neon: #0a2540;
+  --text: #0a1628;
+  --muted: #5c6b7e;
+  --border: #d5dee9;
+  --danger: #c62828;
+  --accent: #163a5f;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-elevated: var(--bg-elevated);
+  --color-card: var(--bg-card);
+  --color-trace: var(--trace);
+  --color-trace-dim: var(--trace-dim);
+  --color-copper: var(--copper);
+  --color-neon: var(--neon);
+  --color-ink: var(--text);
+  --color-muted: var(--muted);
+  --color-line: var(--border);
+  --color-danger: var(--danger);
+  --color-accent: var(--accent);
+  --font-display: var(--font-display);
+  --font-sans: var(--font-body);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body), system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--trace) 25%, transparent);
+  color: var(--text);
+}
+
+@keyframes trace-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-trace {
+  stroke-dasharray: 400;
+  stroke-dashoffset: 400;
+  animation: trace-draw 2.4s ease forwards;
+}
+
+.animate-glow {
+  animation: pulse-glow 2.8s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float-y 5s ease-in-out infinite;
+}
+
+.animate-fade-up {
+  animation: fade-up 0.7s ease both;
+}
+
+.pcb-grid {
+  background-image:
+    linear-gradient(rgba(10, 37, 64, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(10, 37, 64, 0.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.5rem;
+  border-radius: 0.5rem;
+  background: linear-gradient(135deg, #0a2540, #163a5f);
+  color: #ffffff;
+  font-weight: 700;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+  box-shadow: 0 8px 24px rgba(10, 37, 64, 0.22);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+  box-shadow: 0 12px 28px rgba(10, 37, 64, 0.3);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-weight: 600;
+  background: #ffffff;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.btn-ghost:hover {
+  border-color: var(--trace);
+  background: rgba(10, 37, 64, 0.04);
+  transform: translateY(-1px);
+}
+
+.input-field {
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background: #ffffff;
+  padding: 0.75rem 1rem;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-field:focus {
+  border-color: var(--trace);
+  box-shadow: 0 0 0 3px rgba(10, 37, 64, 0.12);
+}
+
+.card-surface {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  box-shadow: 0 4px 20px rgba(10, 37, 64, 0.04);
+}

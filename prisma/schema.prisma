@@ -1,0 +1,174 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  phone        String   @unique
+  email        String?  @unique
+  passwordHash String
+  role         String   @default("STUDENT") // STUDENT | ADMIN
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  enrollments   Enrollment[]
+  progress      LessonProgress[]
+  messages      Message[]       @relation("SentMessages")
+  conversations Conversation[]  @relation("StudentConversations")
+  notifications Notification[]
+  certificates  Certificate[]
+  quizAttempts  QuizAttempt[]
+}
+
+model Course {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String
+  thumbnail   String?
+  level       String   @default("Beginner")
+  duration    String   @default("4 weeks")
+  isFree      Boolean  @default(true)
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  modules      Module[]
+  enrollments  Enrollment[]
+  certificates Certificate[]
+}
+
+model Module {
+  id          String  @id @default(cuid())
+  courseId    String
+  title       String
+  description String?
+  order       Int     @default(0)
+
+  course  Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessons Lesson[]
+}
+
+model Lesson {
+  id          String  @id @default(cuid())
+  moduleId    String
+  title       String
+  type        String  @default("VIDEO") // VIDEO | PDF | QUIZ
+  contentUrl  String?
+  contentText String?
+  durationMin Int     @default(10)
+  order       Int     @default(0)
+
+  module   Module           @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  progress LessonProgress[]
+  quiz     Quiz?
+}
+
+model Quiz {
+  id        String @id @default(cuid())
+  lessonId  String @unique
+  questions String
+
+  lesson   Lesson        @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  attempts QuizAttempt[]
+}
+
+model QuizAttempt {
+  id        String   @id @default(cuid())
+  quizId    String
+  userId    String
+  score     Int
+  answers   String
+  createdAt DateTime @default(now())
+
+  quiz Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Enrollment {
+  id        String   @id @default(cuid())
+  userId    String
+  courseId  String
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+}
+
+model LessonProgress {
+  id          String    @id @default(cuid())
+  userId      String
+  lessonId    String
+  completed   Boolean   @default(false)
+  completedAt DateTime?
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+}
+
+model Conversation {
+  id        String   @id @default(cuid())
+  studentId String
+  pinned    Boolean  @default(false)
+  flagged   Boolean  @default(false)
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  student  User      @relation("StudentConversations", fields: [studentId], references: [id], onDelete: Cascade)
+  messages Message[]
+
+  @@unique([studentId])
+}
+
+model Message {
+  id             String    @id @default(cuid())
+  conversationId String
+  senderId       String
+  body           String
+  readAt         DateTime?
+  createdAt      DateTime  @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User         @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  body      String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Certificate {
+  id       String   @id @default(cuid())
+  userId   String
+  courseId String
+  code     String   @unique
+  issuedAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+}
+
+model Announcement {
+  id        String   @id @default(cuid())
+  title     String
+  body      String
+  createdAt DateTime @default(now())
+}
